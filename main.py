@@ -2,7 +2,11 @@ from pyftpdlib.handlers import FTPHandler
 from pyftpdlib.servers import FTPServer
 from pyftpdlib.authorizers import DummyAuthorizer
 import base64
+import paho.mqtt.publish as publish
 
+#TODO: Make dynamic
+mqtt_host = '192.168.1.55'
+mqtt_port = 1883
 
 class MyHandler(FTPHandler):
 
@@ -28,8 +32,14 @@ class MyHandler(FTPHandler):
     def on_file_received(self, file):
         # do something when a file has been received
         print('on_file_received', file)
-        print(self.convertImageToBase64(file))
-        pass
+        encoded_image = self.convertImageToBase64(file)
+        print('encoded image length:',len(encoded_image))
+        publish.single(
+            topic='todo/replace/topic/name',
+            payload=encoded_image,
+            hostname=mqtt_host,
+            port=mqtt_port
+        )
 
     def on_incomplete_file_sent(self, file):
         # do something when a file is partially sent
