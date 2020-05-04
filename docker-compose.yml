@@ -24,8 +24,10 @@ services:
     container_name: cam_receiver
     ports:
       - 21000:21000
+      - 21001-21010:21001-21010
     environment:
-      - MQTT_HOST=mosquitto      
+      - MQTT_HOST=mosquitto
+      - PASSIVE_PORT_RANGE=21001-21010
     depends_on:
       - mosquitto
       - influxdb

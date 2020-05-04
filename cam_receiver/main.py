@@ -6,9 +6,13 @@ from pyftpdlib.authorizers import DummyAuthorizer
 import base64
 import paho.mqtt.publish as publish
 
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
 #TODO: Make dynamic
 mqtt_host = os.environ['MQTT_HOST'] if 'MQTT_HOST' in os.environ else '192.168.1.55'
 mqtt_port = os.environ['MQTT_PORT'] if 'MQTT_PORT' in os.environ else 1883
+passive_port_range_str = os.environ['PASSIVE_PORT_RANGE'] if 'PASSIVE_PORT_RANGE' in os.environ else '21001-21010'
 
 class MyHandler(FTPHandler):
 
@@ -60,6 +64,7 @@ class MyHandler(FTPHandler):
 
 def main():
     print('Using MQTT Broker: {}:{}'.format(mqtt_host, mqtt_port))
+    print('Passive Port Range:{}'.format(passive_port_range_str))
     authorizer = DummyAuthorizer()
     authorizer.add_user('user', '12345', homedir='.', perm='elradfmwMT')
     authorizer.add_anonymous(homedir='.', perm='elradfmwMT')
@@ -68,6 +73,11 @@ def main():
     handler.authorizer = authorizer
     # Needed to allow external docker ports to be accepted here:
     handler.permit_foreign_addresses = True
+
+    # Passive ports needed or on_file_received never fires:
+    passive_ports_tuple = passive_port_range_str.split('-')
+    handler.passive_ports = range(int(passive_ports_tuple[0]), int(passive_ports_tuple[1]))
+
     server = FTPServer(('', 21000), handler)
     server.serve_forever()
 
