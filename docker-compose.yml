@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:1.5
+    container_name: mosquitto
+    ports:
+      - 1883:1883
+    volumes:
+      - ./data_mosquitto/data:/mosquitto/data
+      - ./data_mosquitto/log:/mosquitto/log
+    restart: always
+  influxdb:
+    image: influxdb:1.7
+    container_name: influxdb
+    ports:
+      - 8086:8086
+    volumes:
+      - ./data_influxdb:/var/lib/influxdb
+    restart: always
+  cam_receiver:
+    build: ./cam_receiver
+    image: damok6/cam_receiver
+    container_name: cam_receiver
+    ports:
+      - 21000:21000
+    environment:
+      - MQTT_HOST=mosquitto      
+    depends_on:
+      - mosquitto
+      - influxdb
+    restart: always

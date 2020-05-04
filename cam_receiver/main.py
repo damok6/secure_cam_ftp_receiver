@@ -1,3 +1,5 @@
+
+import os
 from pyftpdlib.handlers import FTPHandler
 from pyftpdlib.servers import FTPServer
 from pyftpdlib.authorizers import DummyAuthorizer
@@ -5,8 +7,8 @@ import base64
 import paho.mqtt.publish as publish
 
 #TODO: Make dynamic
-mqtt_host = '192.168.1.55'
-mqtt_port = 1883
+mqtt_host = os.environ['MQTT_HOST'] if 'MQTT_HOST' in os.environ else '192.168.1.55'
+mqtt_port = os.environ['MQTT_PORT'] if 'MQTT_PORT' in os.environ else 1883
 
 class MyHandler(FTPHandler):
 
@@ -57,12 +59,15 @@ class MyHandler(FTPHandler):
 
 
 def main():
+    print('Using MQTT Broker: {}:{}'.format(mqtt_host, mqtt_port))
     authorizer = DummyAuthorizer()
     authorizer.add_user('user', '12345', homedir='.', perm='elradfmwMT')
     authorizer.add_anonymous(homedir='.', perm='elradfmwMT')
 
     handler = MyHandler
     handler.authorizer = authorizer
+    # Needed to allow external docker ports to be accepted here:
+    handler.permit_foreign_addresses = True
     server = FTPServer(('', 21000), handler)
     server.serve_forever()
 
