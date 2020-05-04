@@ -33,7 +33,7 @@ class MyHandler(FTPHandler):
         # do something when a file has been received
         print('on_file_received', file)
         encoded_image = self.convertImageToBase64(file)
-        print('encoded image length:',len(encoded_image))
+        print('encoded image ends with:',encoded_image[-10:-1])
         publish.single(
             topic='todo/replace/topic/name',
             payload=encoded_image,
