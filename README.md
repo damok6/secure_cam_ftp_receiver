@@ -17,7 +17,7 @@ And close the virtualenv using:
 deactivate
 ```
 
-or if you want to run without a virtual environment
+Or if you want to run without a virtual environment:
 ```
 pip install -r requirements.txt
 python main.py
@@ -29,6 +29,12 @@ To build and run just the camera receiver container:
 ```
 docker-compose build cam_receiver
 docker-compose up cam_receiver
+```
+
+To build camera receiver container and then run all containers in detatched mode:
+```
+docker-compose build cam_receiver
+docker-compose up -d
 ```
 
 
