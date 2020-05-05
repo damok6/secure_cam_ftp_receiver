@@ -43,15 +43,16 @@ class MyHandler(FTPHandler):
         encoded_image = self.convertImageToBase64(file)
         print('encoded image ends with:',encoded_image[-10:-1])
 
-        publish.single(
-            topic="cached/camera/{}/image".format(cam_name),
-            payload=encoded_image,
-            hostname=mqtt_host,
-            port=mqtt_port
-        )
-        publish.single(
-            topic="cached/camera/{}/motion".format(cam_name),
-            payload=int(1),
+        # publish a message for the image and for the indicator of motion:
+        publish.multiple(
+            [{
+                "topic":"cached/camera/{}/image".format(cam_name),
+                "payload":encoded_image
+            },
+            {
+                "topic":"cached/camera/{}/motion".format(cam_name),
+                "payload":int(1)
+            }],
             hostname=mqtt_host,
             port=mqtt_port
         )
