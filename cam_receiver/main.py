@@ -6,8 +6,8 @@ from pyftpdlib.authorizers import DummyAuthorizer
 import base64
 import paho.mqtt.publish as publish
 
-import logging
-logging.basicConfig(level=logging.DEBUG)
+# import logging
+# logging.basicConfig(level=logging.DEBUG)
 
 #TODO: Make dynamic
 mqtt_host = os.environ['MQTT_HOST'] if 'MQTT_HOST' in os.environ else '192.168.1.55'
@@ -38,11 +38,20 @@ class MyHandler(FTPHandler):
     def on_file_received(self, file):
         # do something when a file has been received
         print('on_file_received', file)
+        split_fpath = file.split('/')
+        cam_name = split_fpath[-4]
         encoded_image = self.convertImageToBase64(file)
         print('encoded image ends with:',encoded_image[-10:-1])
+
         publish.single(
-            topic='todo/replace/topic/name',
+            topic="cached/camera/{}/image".format(cam_name),
             payload=encoded_image,
+            hostname=mqtt_host,
+            port=mqtt_port
+        )
+        publish.single(
+            topic="cached/camera/{}/motion".format(cam_name),
+            payload=int(1),
             hostname=mqtt_host,
             port=mqtt_port
         )
