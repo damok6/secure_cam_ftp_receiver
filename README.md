@@ -37,4 +37,19 @@ docker-compose build cam_receiver
 docker-compose up -d
 ```
 
+If you get an error like:
+
+```
+mkdir: cannot create directory '/var/lib/grafana/plugins': Permission denied
+```
+this likely means the docker container created the directories as root and then was unable to write to the files in the directories. This can be fixed by running:
+
+```
+sudo chown -R 472:472 ./data_grafana/
+```
+
+
+
+this likely means the mqtt docker container created the directories as root and then was unable to write to the files in the directories. This can be fixed by running:
+
 

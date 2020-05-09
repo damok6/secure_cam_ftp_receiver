@@ -24,6 +24,16 @@ services:
       volumes:
         - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
       restart: always
+  grafana:
+    image: grafana/grafana:5.4.3
+    container_name: grafana
+    depends_on:
+      - influxdb
+    ports:
+      - 3000:3000
+    volumes:
+      - ./data_grafana:/var/lib/grafana
+    restart: always
   cam_receiver:
     build: ./cam_receiver
     image: damok6/cam_receiver
