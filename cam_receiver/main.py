@@ -50,11 +50,11 @@ class MyHandler(FTPHandler):
         # publish a message for the image and for the indicator of motion:
         publish.multiple(
             [{
-                "topic":"cached/camera/{}/image".format(cam_name),
+                "topic":"cached/camera_image/{}".format(cam_name),
                 "payload":"images,type=image,sensor_name={} value={}".format(cam_name, str(encoded_image))
             },
             {
-                "topic":"cached/camera/{}/motion".format(cam_name),
+                "topic":"cached/camera_motion/{}".format(cam_name),
                 "payload":"motion,type=motion,sensor_name={} value={}".format(cam_name, int(1))
             }],
             hostname=mqtt_host,
