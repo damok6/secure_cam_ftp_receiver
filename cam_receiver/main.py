@@ -42,6 +42,7 @@ class MyHandler(FTPHandler):
         cam_name = split_fpath[-4]
         # TODO: fix image to be a format that Telegraf will recognise:
         encoded_image = self.convertImageToBase64(file)
+        # self.convertImageToBase64(file).decode('ascii')
         print('encoded image ends with:',encoded_image[-10:-1])
 
         # Payload is using InfluxDB Line protocol format:
@@ -50,7 +51,7 @@ class MyHandler(FTPHandler):
         # publish a message for the image and for the indicator of motion:
         publish.multiple(
             [{
-                "topic":"cached/camera_image/{}".format(cam_name),
+                "topic":"cached_file/camera_image/{}".format(cam_name),
                 "payload":"images,type=image,sensor_name={} value={}".format(cam_name, str(encoded_image))
             },
             {

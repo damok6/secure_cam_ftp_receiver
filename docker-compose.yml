@@ -23,6 +23,10 @@ services:
       container_name: telegraf
       volumes:
         - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
+        - ./data_telegraf:/tmp
+      depends_on:
+        - mosquitto
+        - influxdb
       restart: always
   grafana:
     image: grafana/grafana:5.4.3
